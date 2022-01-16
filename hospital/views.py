@@ -29,6 +29,11 @@ def doctorclick_view(request):
         return HttpResponseRedirect('afterlogin')
     return render(request,'hospital/doctorclick.html')
 
+def Shopkeeperclick_view(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('afterlogin')
+    return render(request,'hospital/Shopkeeperclick.html')
+
 
 #for showing signup/login button for patient(by sumit)
 def patientclick_view(request):
@@ -74,6 +79,25 @@ def doctor_signup_view(request):
         return HttpResponseRedirect('doctorlogin')
     return render(request,'hospital/doctorsignup.html',context=mydict)
 
+def Shopkeeper_signup_view(request):
+    userForm=forms.ShopkeeperUserForm()
+    ShopkeeperForm=forms.ShopkeeperForm()
+    mydict={'userForm':userForm,'ShopkeeperForm':ShopkeeperForm}
+    if request.method=='POST':
+        userForm=forms.ShopkeeperUserForm(request.POST)
+        ShopkeeperForm=forms.ShopkeeperForm(request.POST,request.FILES)
+        if userForm.is_valid() and ShopkeeperForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+            Shopkeeper=ShopkeeperForm.save(commit=False)
+            Shopkeeper.user=user
+            Shopkeeper=Shopkeeper.save()
+            my_Shopkeeper_group = Group.objects.get_or_create(name='SHOPKEEPER')
+            my_Shopkeeper_group[0].user_set.add(user)
+        return HttpResponseRedirect('Shopkeeperlogin')
+    return render(request,'hospital/Shopkeepersignup.html',context=mydict)
+
 
 def patient_signup_view(request):
     userForm=forms.PatientUserForm()
@@ -105,6 +129,8 @@ def is_admin(user):
     return user.groups.filter(name='ADMIN').exists()
 def is_doctor(user):
     return user.groups.filter(name='DOCTOR').exists()
+def is_Shopkeeper(user):
+    return user.groups.filter(name='Shopkeeper').exists()
 def is_patient(user):
     return user.groups.filter(name='PATIENT').exists()
 
@@ -119,6 +145,12 @@ def afterlogin_view(request):
             return redirect('doctor-dashboard')
         else:
             return render(request,'hospital/doctor_wait_for_approval.html')
+    elif is_Shopkeeper(request.user):
+        accountapproval=models.Shopkeeper.objects.all().filter(user_id=request.user.id,status=True)
+        if accountapproval:
+            return redirect('Shopkeeper-dashboard')
+        else:
+            return render(request,'hospital/Shopkeeper_wait_for_approval.html')
     elif is_patient(request.user):
         accountapproval=models.Patient.objects.all().filter(user_id=request.user.id,status=True)
         if accountapproval:
@@ -142,6 +174,7 @@ def admin_dashboard_view(request):
     #for both table in admin dashboard
     doctors=models.Doctor.objects.all().order_by('-id')
     patients=models.Patient.objects.all().order_by('-id')
+    Shopkeepers=models.Shopkeeper.objects.all().order_by('-id')
     #for three cards
     doctorcount=models.Doctor.objects.all().filter(status=True).count()
     pendingdoctorcount=models.Doctor.objects.all().filter(status=False).count()
@@ -170,6 +203,11 @@ def admin_dashboard_view(request):
 def admin_doctor_view(request):
     return render(request,'hospital/admin_doctor.html')
 
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_Shopkeeper_view(request):
+    return render(request,'hospital/admin_Shopkeeper.html')
+
 
 
 @login_required(login_url='adminlogin')
@@ -177,6 +215,12 @@ def admin_doctor_view(request):
 def admin_view_doctor_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
     return render(request,'hospital/admin_view_doctor.html',{'doctors':doctors})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_view_Shopkeeper_view(request):
+    Shopkeepers=models.Shopkeeper.objects.all().filter(status=True)
+    return render(request,'hospital/admin_view_Shopkeeper.html',{'Shopkeepers':Shopkeepers})
 
 
 
@@ -188,6 +232,15 @@ def delete_doctor_from_hospital_view(request,pk):
     user.delete()
     doctor.delete()
     return redirect('admin-view-doctor')
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def delete_Shopkeeper_from_hospital_view(request,pk):
+    Shopkeeper=models.Shopkeeper.objects.get(id=pk)
+    user=models.User.objects.get(id=Shopkeeper.user_id)
+    user.delete()
+    Shopkeeper.delete()
+    return redirect('admin-view-Shopkeeper')
 
 
 
@@ -212,6 +265,29 @@ def update_doctor_view(request,pk):
             doctor.save()
             return redirect('admin-view-doctor')
     return render(request,'hospital/admin_update_doctor.html',context=mydict)
+
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def update_Shopkeeper_view(request,pk):
+    Shopkeeper=models.Shopkeeper.objects.get(id=pk)
+    user=models.User.objects.get(id=Shopkeeper.user_id)
+
+    userForm=forms.ShopkeeperUserForm(instance=user)
+    ShopkeeperForm=forms.ShopkeeperForm(request.FILES,instance=Shopkeeper)
+    mydict={'userForm':userForm,'ShopkeeperForm':ShopkeeperForm}
+    if request.method=='POST':
+        userForm=forms.ShopkeeperUserForm(request.POST,instance=user)
+        ShopkeeperForm=forms.ShopkeeperForm(request.POST,request.FILES,instance=Shopkeeper)
+        if userForm.is_valid() and ShopkeeperForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+            Shopkeeper=ShopkeeperForm.save(commit=False)
+            Shopkeeper.status=True
+            Shopkeeper.save()
+            return redirect('admin-view-Shopkeeper')
+    return render(request,'hospital/admin_update_Shopkeeper.html',context=mydict)
 
 
 
@@ -243,6 +319,33 @@ def admin_add_doctor_view(request):
 
 
 
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_add_Shopkeeper_view(request):
+    userForm=forms.ShopkeeperUserForm()
+    ShopkeeperForm=forms.ShopkeeperForm()
+    mydict={'userForm':userForm,'ShopkeeperForm':ShopkeeperForm}
+    if request.method=='POST':
+        userForm=forms.ShopkeeperUserForm(request.POST)
+        ShopkeeperForm=forms.ShopkeeperForm(request.POST, request.FILES)
+        if userForm.is_valid() and ShopkeeperForm.is_valid():
+            user=userForm.save()
+            user.set_password(user.password)
+            user.save()
+
+            Shopkeeper=ShopkeeperForm.save(commit=False)
+            Shopkeeper.user=user
+            Shopkeeper.status=True
+            Shopkeeper.save()
+
+            my_Shopkeeper_group = Group.objects.get_or_create(name='Shopkeeper')
+            my_Shopkeeper_group[0].user_set.add(user)
+
+        return HttpResponseRedirect('admin-view-Shopkeeper')
+    return render(request,'hospital/admin_add_Shopkeeper.html',context=mydict)
+
+
+
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
@@ -250,6 +353,13 @@ def admin_approve_doctor_view(request):
     #those whose approval are needed
     doctors=models.Doctor.objects.all().filter(status=False)
     return render(request,'hospital/admin_approve_doctor.html',{'doctors':doctors})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_approve_Shopkeeper_view(request):
+    #those whose approval are needed
+    Shopkeepers=models.Shopkeeper.objects.all().filter(status=False)
+    return render(request,'hospital/admin_approve_Shopkeeper.html',{'Shopkeepers':Shopkeepers})
 
 
 @login_required(login_url='adminlogin')
@@ -259,6 +369,14 @@ def approve_doctor_view(request,pk):
     doctor.status=True
     doctor.save()
     return redirect(reverse('admin-approve-doctor'))
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def approve_Shopkeeper_view(request,pk):
+    Shopkeeper=models.Shopkeeper.objects.get(id=pk)
+    Shopkeeper.status=True
+    Shopkeeper.save()
+    return redirect(reverse('admin-approve-Shopkeeper'))
 
 
 @login_required(login_url='adminlogin')
@@ -270,6 +388,15 @@ def reject_doctor_view(request,pk):
     doctor.delete()
     return redirect('admin-approve-doctor')
 
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def reject_Shopkeeper_view(request,pk):
+    Shopkeeper=models.Shopkeeper.objects.get(id=pk)
+    user=models.User.objects.get(id=Shopkeeper.user_id)
+    user.delete()
+    Shopkeeper.delete()
+    return redirect('admin-approve-Shopkeeper')
+
 
 
 @login_required(login_url='adminlogin')
@@ -277,6 +404,12 @@ def reject_doctor_view(request,pk):
 def admin_view_doctor_specialisation_view(request):
     doctors=models.Doctor.objects.all().filter(status=True)
     return render(request,'hospital/admin_view_doctor_specialisation.html',{'doctors':doctors})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_view_Shopkeeper_specialisation_view(request):
+    Shopkeepers=models.Shopkeeper.objects.all().filter(status=True)
+    return render(request,'hospital/admin_view_Shopkeeper_specialisation.html',{'Shopkeepers':Shopkeepers})
 
 
 
@@ -587,6 +720,30 @@ def doctor_dashboard_view(request):
     }
     return render(request,'hospital/doctor_dashboard.html',context=mydict)
 
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_dashboard_view(request):
+    #for three cards
+    patientcount=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).count()
+    appointmentcount=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id).count()
+    patientdischarged=models.PatientDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name).count()
+
+    #for  table in Shopkeeper dashboard
+    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id).order_by('-id')
+    patientid=[]
+    for a in appointments:
+        patientid.append(a.patientId)
+    patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid).order_by('-id')
+    appointments=zip(appointments,patients)
+    mydict={
+    'patientcount':patientcount,
+    'appointmentcount':appointmentcount,
+    'patientdischarged':patientdischarged,
+    'appointments':appointments,
+    'Shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
+    }
+    return render(request,'hospital/Shopkeeper_dashboard.html',context=mydict)
+
 
 
 @login_required(login_url='doctorlogin')
@@ -596,6 +753,14 @@ def doctor_patient_view(request):
     'doctor':models.Doctor.objects.get(user_id=request.user.id), #for profile picture of doctor in sidebar
     }
     return render(request,'hospital/doctor_patient.html',context=mydict)
+
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_patient_view(request):
+    mydict={
+    'Shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
+    }
+    return render(request,'hospital/Shopkeeper_patient.html',context=mydict)
 
 
 
@@ -608,6 +773,13 @@ def doctor_view_patient_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_view_patient_view(request):
+    patients=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id)
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    return render(request,'hospital/Shopkeeper_view_patient.html',{'patients':patients,'Shopkeeper':Shopkeeper})
+
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -618,6 +790,15 @@ def search_view(request):
     patients=models.Patient.objects.all().filter(status=True,assignedDoctorId=request.user.id).filter(Q(symptoms__icontains=query)|Q(user__first_name__icontains=query))
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def search_view(request):
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    # whatever user write in search box we get in query
+    query = request.GET['query']
+    patients=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).filter(Q(symptoms__icontains=query)|Q(user__first_name__icontains=query))
+    return render(request,'hospital/Shopkeeper_view_patient.html',{'patients':patients,'Shopkeeper':Shopkeeper})
+
 
 
 @login_required(login_url='doctorlogin')
@@ -627,6 +808,13 @@ def doctor_view_discharge_patient_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'doctor':doctor})
 
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_view_discharge_patient_view(request):
+    dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name)
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    return render(request,'hospital/Shopkeeper_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'Shopkeeper':Shopkeeper})
+
 
 
 @login_required(login_url='doctorlogin')
@@ -634,6 +822,12 @@ def doctor_view_discharge_patient_view(request):
 def doctor_appointment_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_appointment.html',{'doctor':doctor})
+
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_appointment_view(request):
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    return render(request,'hospital/Shopkeeper_appointment.html',{'Shopkeeper':Shopkeeper})
 
 
 
@@ -648,6 +842,18 @@ def doctor_view_appointment_view(request):
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
     appointments=zip(appointments,patients)
     return render(request,'hospital/doctor_view_appointment.html',{'appointments':appointments,'doctor':doctor})
+
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_view_appointment_view(request):
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id)
+    patientid=[]
+    for a in appointments:
+        patientid.append(a.patientId)
+    patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
+    appointments=zip(appointments,patients)
+    return render(request,'hospital/Shopkeeper_view_appointment.html',{'appointments':appointments,'Shopkeeper':Shopkeeper})
 
 
 
@@ -664,6 +870,19 @@ def doctor_delete_appointment_view(request):
     return render(request,'hospital/doctor_delete_appointment.html',{'appointments':appointments,'doctor':doctor})
 
 
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def Shopkeeper_delete_appointment_view(request):
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id)
+    patientid=[]
+    for a in appointments:
+        patientid.append(a.patientId)
+    patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
+    appointments=zip(appointments,patients)
+    return render(request,'hospital/Shopkeeper_delete_appointment.html',{'appointments':appointments,'Shopkeeper':Shopkeeper})
+
+
 
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -678,6 +897,20 @@ def delete_appointment_view(request,pk):
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
     appointments=zip(appointments,patients)
     return render(request,'hospital/doctor_delete_appointment.html',{'appointments':appointments,'doctor':doctor})
+
+@login_required(login_url='Shopkeeperlogin')
+@user_passes_test(is_Shopkeeper)
+def delete_appointment_view(request,pk):
+    appointment=models.Appointment.objects.get(id=pk)
+    appointment.delete()
+    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id)
+    patientid=[]
+    for a in appointments:
+        patientid.append(a.patientId)
+    patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
+    appointments=zip(appointments,patients)
+    return render(request,'hospital/Shopkeeper_delete_appointment.html',{'appointments':appointments,'Shopkeeper':Shopkeeper})
 
 
 

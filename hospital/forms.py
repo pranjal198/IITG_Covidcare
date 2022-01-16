@@ -27,6 +27,18 @@ class DoctorForm(forms.ModelForm):
         model=models.Doctor
         fields=['address','mobile','department','status','profile_pic']
 
+class ShopkeeperUserForm(forms.ModelForm):
+    class Meta:
+        model=User
+        fields=['first_name','last_name','username','password']
+        widgets = {
+        'password': forms.PasswordInput()
+        }
+class ShopkeeperForm(forms.ModelForm):
+    class Meta:
+        model=models.Shopkeeper
+        fields=['address','mobile','department','status','profile_pic']
+
 
 
 #for teacher related form
