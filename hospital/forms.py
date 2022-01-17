@@ -37,7 +37,7 @@ class ShopkeeperUserForm(forms.ModelForm):
 class ShopkeeperForm(forms.ModelForm):
     class Meta:
         model=models.Shopkeeper
-        fields=['address','mobile','department','status','profile_pic']
+        fields=['address','mobile','type','status','profile_pic']
 
 
 
@@ -67,11 +67,18 @@ class AppointmentForm(forms.ModelForm):
         model=models.Appointment
         fields=['description','status']
 
-
+#for booking appointments
 class PatientAppointmentForm(forms.ModelForm):
     doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
     class Meta:
         model=models.Appointment
+        fields=['description','status']
+
+#for making orders
+class PatientOrderForm(forms.ModelForm):
+    shopkeeperId=forms.ModelChoiceField(queryset=models.Shopkeeper.objects.all().filter(status=True),empty_label="Shop Name and Type", to_field_name="user_id")
+    class Meta:
+        model=models.Order
         fields=['description','status']
 
 
@@ -80,9 +87,3 @@ class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
     Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
-
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders

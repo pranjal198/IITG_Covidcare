@@ -1,15 +1,3 @@
-"""
-
-Developed By : sumit kumar
-facebook : fb.com/sumit.luv
-Youtube :youtube.com/lazycoders
-
-
-"""
-
-
-
-
 from django.contrib import admin
 from django.urls import path
 from hospital import views
@@ -109,6 +97,17 @@ urlpatterns +=[
 
 ]
 
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders
+#---------FOR SHOPKEEPER RELATED URLS-------------------------------------
+urlpatterns +=[
+    path('shopkeeper-dashboard', views.shopkeeper_dashboard_view,name='shopkeeper-dashboard'),
+    path('search', views.search_view,name='search'),
+
+    path('shopkeeper-patient', views.shopkeeper_patient_view,name='shopkeeper-patient'),
+    path('shopkeeper-view-patient', views.shopkeeper_view_patient_view,name='shopkeeper-view-patient'),
+    path('shopkeeper-view-discharge-patient',views.shopkeeper_view_discharge_order_view,name='shopkeeper-view-discharge-order'),
+
+    path('shopkeeper-order', views.shopkeeper_order_view,name='shopkeeper-appointment'),
+    path('shopkeeper-view-order', views.shopkeeper_view_order_view,name='shopkeeper-view-order'),
+    path('shopkeeper-delete-order',views.shopkeeper_delete_order_view,name='shopkeeper-delete-order'),
+    path('delete-order/<int:pk>', views.delete_order_view,name='delete-order'),
+]

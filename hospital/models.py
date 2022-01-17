@@ -11,8 +11,8 @@ departments=[('Cardiologist','Cardiologist'),
 ('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
 ]
 
-type=[('medicine','medicine'),
-('other','other')
+type=[('Medicine','Medicine'),
+('Other','Other')
 ]
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
@@ -35,7 +35,7 @@ class Shopkeeper(models.Model):
     profile_pic= models.ImageField(upload_to='profile_pic/DoctorProfilePic/',null=True,blank=True)
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20,null=True)
-    department= models.CharField(max_length=50,choices=type,default='Cardiologist')
+    type= models.CharField(max_length=50,choices=type,default='Other')
     status=models.BooleanField(default=False)
     @property
     def get_name(self):
@@ -77,6 +77,16 @@ class Appointment(models.Model):
     status=models.BooleanField(default=False)
 
 
+class Order(models.Model):
+    patientId=models.PositiveIntegerField(null=True)
+    shopkeeperId=models.PositiveIntegerField(null=True)
+    patientName=models.CharField(max_length=40,null=True)
+    shopkeeperName=models.CharField(max_length=40,null=True)
+    orderDate=models.DateField(auto_now=True)
+    description=models.TextField(max_length=500)
+    status=models.BooleanField(default=False)
+
+
 
 class PatientDischargeDetails(models.Model):
     patientId=models.PositiveIntegerField(null=True)
@@ -95,8 +105,3 @@ class PatientDischargeDetails(models.Model):
     doctorFee=models.PositiveIntegerField(null=False)
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders
