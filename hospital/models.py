@@ -44,7 +44,7 @@ class Shopkeeper(models.Model):
     def get_id(self):
         return self.user.id
     def __str__(self):
-        return "{} ({})".format(self.user.first_name,self.department)
+        return "{} ({})".format(self.user.first_name,self.type)
 
 
 

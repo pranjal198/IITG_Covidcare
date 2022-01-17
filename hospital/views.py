@@ -157,6 +157,8 @@ def afterlogin_view(request):
             return redirect('patient-dashboard')
         else:
             return render(request,'hospital/patient_wait_for_approval.html')
+    else:
+        print(request.user.id)
 
 
 
@@ -352,8 +354,8 @@ def admin_add_shopkeeper_view(request):
             my_shopkeeper_group = Group.objects.get_or_create(name='SHOPKEEPER')
             my_shopkeeper_group[0].user_set.add(user)
 
-        return HttpResponseRedirect('admin-view-Shopkeeper')
-    return render(request,'hospital/admin_add_Shopkeeper.html',context=mydict)
+        return HttpResponseRedirect('admin-view-shopkeeper')
+    return render(request,'hospital/admin_add_shopkeeper.html',context=mydict)
 
 
 
@@ -418,9 +420,9 @@ def admin_view_doctor_specialisation_view(request):
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
-def admin_view_shopkeeper_specialisation_view(request):
+def admin_view_shopkeeper_type_view(request):
     shopkeepers=models.Shopkeeper.objects.all().filter(status=True)
-    return render(request,'hospital/admin_view_shopkeeper_specialisation.html',{'shopkeepers':shopkeepers})
+    return render(request,'hospital/admin_view_shopkeeper_type.html',{'shopkeepers':shopkeepers})
 
 
 
@@ -737,7 +739,7 @@ def shopkeeper_dashboard_view(request):
     #for three cards
     #patientcount=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).count()
     ordercount=models.Order.objects.all().filter(status=True,shopkeeperId=request.user.id).count()
-    ordersdischarged=models.OrderDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name).count()
+    #ordersdischarged=models.OrderDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name).count()
 
     #for  table in Shopkeeper dashboard
     orders=models.Order.objects.all().filter(status=True,shopkeeperId=request.user.id).order_by('-id')
@@ -749,7 +751,7 @@ def shopkeeper_dashboard_view(request):
     mydict={
     #'patientcount':patientcount,
     'ordercount':ordercount,
-    'ordersdischarged':ordersdischarged,
+    #'ordersdischarged':ordersdischarged,
     'orders':orders,
     'shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
     }

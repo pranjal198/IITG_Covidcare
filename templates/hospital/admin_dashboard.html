@@ -66,6 +66,35 @@
         {% endfor %}
       </table>
     </div>
+    <div class="panel panel-primary col-md-5" style="margin-left:2%;">
+      <div class="panel-heading" style="text-align:center;">
+        <h6 class="panel-title">Recent Shopkeepers</h6>
+      </div>
+      <table class="table table-hover" id="dev-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Mobile</th>
+            <th>Status</th>
+
+          </tr>
+        </thead>
+        {% for s in shopkeepers %}
+          <tr>
+            <td> {{s.get_name}}</td>
+            <td>{{s.department}}</td>
+            <td>{{s.mobile}}</td>
+            {%if s.status%}
+            <td> <span class="label label-primary">Permanent</span></td>
+            {% else %}
+            <td> <span class="label label-success">On Hold</span></td>
+            {% endif %}
+
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
   </div>
 </div>
 

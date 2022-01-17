@@ -17,9 +17,9 @@ class AppointmentAdmin(admin.ModelAdmin):
     pass
 admin.site.register(Appointment, AppointmentAdmin)
 
-# class OrderAdmin(admin.ModelAdmin):
-#     pass
-# admin.site.register(Order, OrderAdmin)
+class OrderAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(Order, OrderAdmin)
 
 class PatientDischargeDetailsAdmin(admin.ModelAdmin):
     pass

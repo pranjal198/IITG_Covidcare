@@ -47,6 +47,16 @@ urlpatterns = [
     path('admin-view-doctor-specialisation',views.admin_view_doctor_specialisation_view,name='admin-view-doctor-specialisation'),
 
 
+    path('admin-shopkeeper', views.admin_shopkeeper_view,name='admin-shopkeeper'),
+    path('admin-view-shopkeeper', views.admin_view_shopkeeper_view,name='admin-view-shopkeeper'),
+    path('delete-shopkeeper-from-hospital/<int:pk>', views.delete_shopkeeper_from_hospital_view,name='delete-shopkeeper-from-hospital'),
+    path('update-shopkeeper/<int:pk>', views.update_shopkeeper_view,name='update-shopkeeper'),
+    path('admin-add-shopkeeper', views.admin_add_shopkeeper_view,name='admin-add-shopkeeper'),
+    path('admin-approve-shopkeeper', views.admin_approve_shopkeeper_view,name='admin-approve-shopkeeper'),
+    path('approve-shopkeeper/<int:pk>', views.approve_shopkeeper_view,name='approve-shopkeeper'),
+    path('reject-shopkeeper/<int:pk>', views.reject_shopkeeper_view,name='reject-shopkeeper'),
+    path('admin-view-shopkeeper-type',views.admin_view_shopkeeper_type_view,name='admin-view-shopkeeper-type'),
+
     path('admin-patient', views.admin_patient_view,name='admin-patient'),
     path('admin-view-patient', views.admin_view_patient_view,name='admin-view-patient'),
     path('delete-patient-from-hospital/<int:pk>', views.delete_patient_from_hospital_view,name='delete-patient-from-hospital'),
