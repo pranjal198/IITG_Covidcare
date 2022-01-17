@@ -85,7 +85,7 @@ def shopkeeper_signup_view(request):
     mydict={'userForm':userForm,'shopkeeperForm':shopkeeperForm}
     if request.method=='POST':
         userForm=forms.ShopkeeperUserForm(request.POST)
-        ShopkeeperForm=forms.ShopkeeperForm(request.POST,request.FILES)
+        shopkeeperForm=forms.ShopkeeperForm(request.POST,request.FILES)
         if userForm.is_valid() and shopkeeperForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)
@@ -95,7 +95,7 @@ def shopkeeper_signup_view(request):
             shopkeeper=shopkeeper.save()
             my_Shopkeeper_group = Group.objects.get_or_create(name='SHOPKEEPER')
             my_Shopkeeper_group[0].user_set.add(user)
-        return HttpResponseRedirect('Shopkeeperlogin')
+        return HttpResponseRedirect('shopkeeperlogin')
     return render(request,'hospital/shopkeepersignup.html',context=mydict)
 
 
@@ -150,7 +150,7 @@ def afterlogin_view(request):
         if accountapproval:
             return redirect('shopkeeper-dashboard')
         else:
-            return render(request,'hospital/Shopkeeper_wait_for_approval.html')
+            return render(request,'hospital/shopkeeper_wait_for_approval.html')
     elif is_patient(request.user):
         accountapproval=models.Patient.objects.all().filter(user_id=request.user.id,status=True)
         if accountapproval:
@@ -349,7 +349,7 @@ def admin_add_shopkeeper_view(request):
             shopkeeper.status=True
             shopkeeper.save()
 
-            my_shopkeeper_group = Group.objects.get_or_create(name='Shopkeeper')
+            my_shopkeeper_group = Group.objects.get_or_create(name='SHOPKEEPER')
             my_shopkeeper_group[0].user_set.add(user)
 
         return HttpResponseRedirect('admin-view-Shopkeeper')
@@ -370,7 +370,7 @@ def admin_approve_doctor_view(request):
 def admin_approve_shopkeeper_view(request):
     #those whose approval are needed
     shopkeepers=models.Shopkeeper.objects.all().filter(status=False)
-    return render(request,'hospital/admin_approve_Shopkeeper.html',{'shopkeepers':shopkeepers})
+    return render(request,'hospital/admin_approve_shopkeeper.html',{'shopkeepers':shopkeepers})
 
 
 @login_required(login_url='adminlogin')
@@ -705,7 +705,7 @@ def reject_appointment_view(request,pk):
 
 
 #---------------------------------------------------------------------------------
-#------------------------ DOCTOR RELATED VIEWS START ------------------------------
+#------------------------ DOCTOR and SHOPKEEPER RELATED VIEWS START ------------------------------
 #---------------------------------------------------------------------------------
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
@@ -731,29 +731,29 @@ def doctor_dashboard_view(request):
     }
     return render(request,'hospital/doctor_dashboard.html',context=mydict)
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
 def shopkeeper_dashboard_view(request):
     #for three cards
-    patientcount=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).count()
-    appointmentcount=models.Appointment.objects.all().filter(status=True,shopkeeperId=request.user.id).count()
+    #patientcount=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).count()
+    ordercount=models.Order.objects.all().filter(status=True,shopkeeperId=request.user.id).count()
     ordersdischarged=models.OrderDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name).count()
 
     #for  table in Shopkeeper dashboard
-    appointments=models.Appointment.objects.all().filter(status=True,shopkeeperId=request.user.id).order_by('-id')
+    orders=models.Order.objects.all().filter(status=True,shopkeeperId=request.user.id).order_by('-id')
     patientid=[]
-    for a in appointments:
+    for a in orders:
         patientid.append(a.patientId)
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid).order_by('-id')
-    appointments=zip(appointments,patients)
+    orders=zip(orders,patients)
     mydict={
-    'patientcount':patientcount,
-    'appointmentcount':appointmentcount,
-    'patientdischarged':patientdischarged,
-    'appointments':appointments,
-    'Shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
+    #'patientcount':patientcount,
+    'ordercount':ordercount,
+    'ordersdischarged':ordersdischarged,
+    'orders':orders,
+    'shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
     }
-    return render(request,'hospital/Shopkeeper_dashboard.html',context=mydict)
+    return render(request,'hospital/shopkeeper_dashboard.html',context=mydict)
 
 
 
@@ -765,13 +765,13 @@ def doctor_patient_view(request):
     }
     return render(request,'hospital/doctor_patient.html',context=mydict)
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
-def Shopkeeper_patient_view(request):
+def shopkeeper_patient_view(request):
     mydict={
-    'Shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
+    'shopkeeper':models.Shopkeeper.objects.get(user_id=request.user.id), #for profile picture of Shopkeeper in sidebar
     }
-    return render(request,'hospital/Shopkeeper_patient.html',context=mydict)
+    return render(request,'hospital/shopkeeper_patient.html',context=mydict)
 
 
 
@@ -784,12 +784,12 @@ def doctor_view_patient_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
-def Shopkeeper_view_patient_view(request):
+def shopkeeper_view_patient_view(request):
     patients=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id)
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    return render(request,'hospital/Shopkeeper_view_patient.html',{'patients':patients,'Shopkeeper':Shopkeeper})
+    shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    return render(request,'hospital/shopkeeper_view_patient.html',{'patients':patients,'shopkeeper':shopkeeper})
 
 
 @login_required(login_url='doctorlogin')
@@ -801,14 +801,14 @@ def search_view(request):
     patients=models.Patient.objects.all().filter(status=True,assignedDoctorId=request.user.id).filter(Q(symptoms__icontains=query)|Q(user__first_name__icontains=query))
     return render(request,'hospital/doctor_view_patient.html',{'patients':patients,'doctor':doctor})
 
-@login_required(login_url='Shopkeeperlogin')
-@user_passes_test(is_shopkeeper)
-def search_view(request):
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    # whatever user write in search box we get in query
-    query = request.GET['query']
-    patients=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).filter(Q(symptoms__icontains=query)|Q(user__first_name__icontains=query))
-    return render(request,'hospital/Shopkeeper_view_patient.html',{'patients':patients,'Shopkeeper':Shopkeeper})
+# @login_required(login_url='shopkeeperlogin')
+# @user_passes_test(is_shopkeeper)
+# def search_view(request):
+#     Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+#     # whatever user write in search box we get in query
+#     query = request.GET['query']
+#     patients=models.Patient.objects.all().filter(status=True,assignedShopkeeperId=request.user.id).filter(Q(symptoms__icontains=query)|Q(user__first_name__icontains=query))
+#     return render(request,'hospital/Shopkeeper_view_patient.html',{'patients':patients,'shopkeeper':Shopkeeper})
 
 
 
@@ -819,12 +819,12 @@ def doctor_view_discharge_patient_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'doctor':doctor})
 
-@login_required(login_url='Shopkeeperlogin')
-@user_passes_test(is_shopkeeper)
-def Shopkeeper_view_discharge_patient_view(request):
-    dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name)
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    return render(request,'hospital/Shopkeeper_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'Shopkeeper':Shopkeeper})
+# @login_required(login_url='shopkeeperlogin')
+# @user_passes_test(is_shopkeeper)
+# def Shopkeeper_view_discharge_patient_view(request):
+#     dischargedpatients=models.PatientDischargeDetails.objects.all().distinct().filter(assignedShopkeeperName=request.user.first_name)
+#     Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+#     return render(request,'hospital/Shopkeeper_view_discharge_patient.html',{'dischargedpatients':dischargedpatients,'shopkeeper':Shopkeeper})
 
 
 
@@ -834,11 +834,11 @@ def doctor_appointment_view(request):
     doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
     return render(request,'hospital/doctor_appointment.html',{'doctor':doctor})
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
-def Shopkeeper_appointment_view(request):
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    return render(request,'hospital/Shopkeeper_appointment.html',{'Shopkeeper':Shopkeeper})
+def shopkeeper_order_view(request):
+    shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    return render(request,'hospital/shopkeeper_order.html',{'shopkeeper':shopkeeper})
 
 
 
@@ -854,17 +854,17 @@ def doctor_view_appointment_view(request):
     appointments=zip(appointments,patients)
     return render(request,'hospital/doctor_view_appointment.html',{'appointments':appointments,'doctor':doctor})
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
-def Shopkeeper_view_appointment_view(request):
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id)
+def shopkeeper_view_order_view(request):
+    shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    orders=models.Appointment.objects.all().filter(status=True,shopkeeperId=request.user.id)
     patientid=[]
-    for a in appointments:
+    for a in orders:
         patientid.append(a.patientId)
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
-    appointments=zip(appointments,patients)
-    return render(request,'hospital/Shopkeeper_view_appointment.html',{'appointments':appointments,'Shopkeeper':Shopkeeper})
+    orders=zip(orders,patients)
+    return render(request,'hospital/shopkeeper_view_appointment.html',{'orders':orders,'shopkeeper':shopkeeper})
 
 
 
@@ -881,17 +881,17 @@ def doctor_delete_appointment_view(request):
     return render(request,'hospital/doctor_delete_appointment.html',{'appointments':appointments,'doctor':doctor})
 
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
-def Shopkeeper_delete_appointment_view(request):
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id)
+def shopkeeper_delete_order_view(request):
+    shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    orders=models.Appointment.objects.all().filter(status=True,shopkeeperId=request.user.id)
     patientid=[]
-    for a in appointments:
+    for a in orders:
         patientid.append(a.patientId)
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
-    appointments=zip(appointments,patients)
-    return render(request,'hospital/Shopkeeper_delete_appointment.html',{'appointments':appointments,'Shopkeeper':Shopkeeper})
+    orders=zip(orders,patients)
+    return render(request,'hospital/shopkeeper_delete_order.html',{'orders':orders,'shopkeeper':shopkeeper})
 
 
 
@@ -909,24 +909,24 @@ def delete_appointment_view(request,pk):
     appointments=zip(appointments,patients)
     return render(request,'hospital/doctor_delete_appointment.html',{'appointments':appointments,'doctor':doctor})
 
-@login_required(login_url='Shopkeeperlogin')
+@login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
-def delete_appointment_view(request,pk):
-    appointment=models.Appointment.objects.get(id=pk)
-    appointment.delete()
-    Shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
-    appointments=models.Appointment.objects.all().filter(status=True,ShopkeeperId=request.user.id)
+def delete_order_view(request,pk):
+    order=models.Appointment.objects.get(id=pk)
+    order.delete()
+    shopkeeper=models.Shopkeeper.objects.get(user_id=request.user.id) #for profile picture of Shopkeeper in sidebar
+    orders=models.Appointment.objects.all().filter(status=True,shopkeeperId=request.user.id)
     patientid=[]
-    for a in appointments:
+    for a in orders:
         patientid.append(a.patientId)
     patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
-    appointments=zip(appointments,patients)
-    return render(request,'hospital/Shopkeeper_delete_appointment.html',{'appointments':appointments,'Shopkeeper':Shopkeeper})
+    orders=zip(orders,patients)
+    return render(request,'hospital/shopkeeper_delete_appointment.html',{'orders':orders,'shopkeeper':shopkeeper})
 
 
 
 #---------------------------------------------------------------------------------
-#------------------------ DOCTOR RELATED VIEWS END ------------------------------
+#------------------------ DOCTOR and SHOPKEEPER RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
 
 
@@ -1084,9 +1084,3 @@ def contactus_view(request):
 #---------------------------------------------------------------------------------
 #------------------------ ADMIN RELATED VIEWS END ------------------------------
 #---------------------------------------------------------------------------------
-
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders

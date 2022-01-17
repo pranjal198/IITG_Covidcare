@@ -17,14 +17,17 @@ urlpatterns = [
     path('adminclick', views.adminclick_view),
     path('doctorclick', views.doctorclick_view),
     path('patientclick', views.patientclick_view),
+    path('shopkeeperclick', views.shopkeeperclick_view),
 
     path('adminsignup', views.admin_signup_view),
     path('doctorsignup', views.doctor_signup_view,name='doctorsignup'),
     path('patientsignup', views.patient_signup_view),
+    path('shopkeepersignup', views.shopkeeper_signup_view,name='shopkeepersignup'),
     
     path('adminlogin', LoginView.as_view(template_name='hospital/adminlogin.html')),
     path('doctorlogin', LoginView.as_view(template_name='hospital/doctorlogin.html')),
     path('patientlogin', LoginView.as_view(template_name='hospital/patientlogin.html')),
+    path('shopkeeperlogin', LoginView.as_view(template_name='hospital/shopkeeperlogin.html')),
 
 
     path('afterlogin', views.afterlogin_view,name='afterlogin'),
@@ -104,7 +107,7 @@ urlpatterns +=[
 
     path('shopkeeper-patient', views.shopkeeper_patient_view,name='shopkeeper-patient'),
     path('shopkeeper-view-patient', views.shopkeeper_view_patient_view,name='shopkeeper-view-patient'),
-    path('shopkeeper-view-discharge-patient',views.shopkeeper_view_discharge_order_view,name='shopkeeper-view-discharge-order'),
+    #path('shopkeeper-view-discharge-patient',views.shopkeeper_view_discharge_order_view,name='shopkeeper-view-discharge-order'),
 
     path('shopkeeper-order', views.shopkeeper_order_view,name='shopkeeper-appointment'),
     path('shopkeeper-view-order', views.shopkeeper_view_order_view,name='shopkeeper-view-order'),
