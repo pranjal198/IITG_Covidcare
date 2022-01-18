@@ -2,86 +2,127 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 
-#for admin signup
+# for admin signup
 class AdminSigupForm(forms.ModelForm):
     class Meta:
-        model=User
-        fields=['first_name','last_name','username','password']
-        widgets = {
-        'password': forms.PasswordInput()
-        }
+        model = User
+        fields = ["first_name", "last_name", "username", "password"]
+        widgets = {"password": forms.PasswordInput()}
 
 
-#for student related form
+# for student related form
 class DoctorUserForm(forms.ModelForm):
     class Meta:
-        model=User
-        fields=['first_name','last_name','username','password']
-        widgets = {
-        'password': forms.PasswordInput()
-        }
+        model = User
+        fields = ["first_name", "last_name", "username", "password"]
+        widgets = {"password": forms.PasswordInput()}
+
+
 class DoctorForm(forms.ModelForm):
     class Meta:
-        model=models.Doctor
-        fields=['address','mobile','department','status','profile_pic']
+        model = models.Doctor
+        fields = ["address", "mobile", "department", "status", "profile_pic"]
+
 
 class ShopkeeperUserForm(forms.ModelForm):
     class Meta:
-        model=User
-        fields=['first_name','last_name','username','password']
-        widgets = {
-        'password': forms.PasswordInput()
-        }
+        model = User
+        fields = ["first_name", "last_name", "username", "password"]
+        widgets = {"password": forms.PasswordInput()}
+
+
 class ShopkeeperForm(forms.ModelForm):
     class Meta:
-        model=models.Shopkeeper
-        fields=['address','mobile','type','status','profile_pic']
+        model = models.Shopkeeper
+        fields = ["address", "mobile", "type", "status", "profile_pic"]
 
 
-
-#for teacher related form
+# for teacher related form
 class PatientUserForm(forms.ModelForm):
     class Meta:
-        model=User
-        fields=['first_name','last_name','username','password']
-        widgets = {
-        'password': forms.PasswordInput()
-        }
-class PatientForm(forms.ModelForm):
-    #this is the extrafield for linking patient and their assigend doctor
-    #this will show dropdown __str__ method doctor model is shown on html so override it
-    #to_field_name this will fetch corresponding value  user_id present in Doctor model and return it
-    assignedDoctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Name and Department", to_field_name="user_id")
-    class Meta:
-        model=models.Patient
-        fields=['address','mobile','status','symptoms','profile_pic']
+        model = User
+        fields = ["first_name", "last_name", "username", "password"]
+        widgets = {"password": forms.PasswordInput()}
 
+
+class PatientForm(forms.ModelForm):
+    # this is the extrafield for linking patient and their assigend doctor
+    # this will show dropdown __str__ method doctor model is shown on html so override it
+    # to_field_name this will fetch corresponding value  user_id present in Doctor model and return it
+    assignedDoctorId = forms.ModelChoiceField(
+        queryset=models.Doctor.objects.all().filter(status=True),
+        empty_label="Name and Department",
+        to_field_name="user_id",
+    )
+
+    class Meta:
+        model = models.Patient
+        fields = ["address", "mobile", "status", "symptoms", "profile_pic"]
 
 
 class AppointmentForm(forms.ModelForm):
-    doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
-    patientId=forms.ModelChoiceField(queryset=models.Patient.objects.all().filter(status=True),empty_label="Patient Name and Symptoms", to_field_name="user_id")
-    class Meta:
-        model=models.Appointment
-        fields=['description','status']
+    doctorId = forms.ModelChoiceField(
+        queryset=models.Doctor.objects.all().filter(status=True),
+        empty_label="Doctor Name and Department",
+        to_field_name="user_id",
+    )
+    patientId = forms.ModelChoiceField(
+        queryset=models.Patient.objects.all().filter(status=True),
+        empty_label="Patient Name and Symptoms",
+        to_field_name="user_id",
+    )
 
-#for booking appointments
+    class Meta:
+        model = models.Appointment
+        fields = ["description", "status"]
+
+class OrderForm(forms.ModelForm):
+    orderId = forms.ModelChoiceField(
+        queryset=models.Shopkeeper.objects.all().filter(status=True),
+        empty_label="Shopkeeper Name and Type",
+        to_field_name="user_id",
+    )
+    patientId = forms.ModelChoiceField(
+        queryset=models.Patient.objects.all().filter(status=True),
+        empty_label="Patient Name",
+        to_field_name="user_id",
+    )
+
+    class Meta:
+        model = models.Order
+        fields = ["description", "status"]
+
+
+# for booking appointments
 class PatientAppointmentForm(forms.ModelForm):
-    doctorId=forms.ModelChoiceField(queryset=models.Doctor.objects.all().filter(status=True),empty_label="Doctor Name and Department", to_field_name="user_id")
-    class Meta:
-        model=models.Appointment
-        fields=['description','status']
+    doctorId = forms.ModelChoiceField(
+        queryset=models.Doctor.objects.all().filter(status=True),
+        empty_label="Doctor Name and Department",
+        to_field_name="user_id",
+    )
 
-#for making orders
+    class Meta:
+        model = models.Appointment
+        fields = ["description", "status"]
+
+
+# for making orders
 class PatientOrderForm(forms.ModelForm):
-    shopkeeperId=forms.ModelChoiceField(queryset=models.Shopkeeper.objects.all().filter(status=True),empty_label="Shop Name and Type", to_field_name="user_id")
+    shopkeeperId = forms.ModelChoiceField(
+        queryset=models.Shopkeeper.objects.all().filter(status=True),
+        empty_label="Shop Name and Type",
+        to_field_name="user_id",
+    )
+
     class Meta:
-        model=models.Order
-        fields=['description','status']
+        model = models.Order
+        fields = ["description", "status"]
 
 
-#for contact us page
+# for contact us page
 class ContactusForm(forms.Form):
     Name = forms.CharField(max_length=30)
     Email = forms.EmailField()
-    Message = forms.CharField(max_length=500,widget=forms.Textarea(attrs={'rows': 3, 'cols': 30}))
+    Message = forms.CharField(
+        max_length=500, widget=forms.Textarea(attrs={"rows": 3, "cols": 30})
+    )

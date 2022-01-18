@@ -61,7 +61,7 @@
 
 
 
-  <!--- signup page for shopkeeper by admin(sumit)  ---------->
+  <!--- signup page for doctor by admin(sumit)  ---------->
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="container register-form">
@@ -80,7 +80,7 @@
                 {% render_field userForm.username class="form-control" placeholder="Username" %}
               </div>
               <div class="form-group">
-                {% render_field shopkeeperForm.department class="form-control" placeholder="Type" %}
+                {% render_field shopkeeperForm.type class="form-control" placeholder="Type" %}
               </div>
               <div class="form-group">
                 {% render_field shopkeeperForm.address class="form-control" placeholder="Address" %}
@@ -113,4 +113,5 @@
 
   {% include "hospital/footer.html" %}
 </body>
+
 </html>
