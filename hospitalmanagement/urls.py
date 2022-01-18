@@ -95,6 +95,7 @@ urlpatterns +=[
 ]
 
 
+# TODO:Add patient-order interactions; fix the Group issue which happens 'afterlogin'; improve UI
 
 
 #---------FOR PATIENT RELATED URLS-------------------------------------
@@ -102,10 +103,15 @@ urlpatterns +=[
 
     path('patient-dashboard', views.patient_dashboard_view,name='patient-dashboard'),
     path('patient-appointment', views.patient_appointment_view,name='patient-appointment'),
+    path('patient-order', views.patient_order_view,name='patient-order'),
     path('patient-book-appointment', views.patient_book_appointment_view,name='patient-book-appointment'),
     path('patient-view-appointment', views.patient_view_appointment_view,name='patient-view-appointment'),
+    path('patient-book-order', views.patient_book_order_view,name='patient-book-order'),
+    path('patient-view-order', views.patient_view_order_view,name='patient-view-order'),
     path('patient-view-doctor', views.patient_view_doctor_view,name='patient-view-doctor'),
+    path('patient-view-shopkeeper', views.patient_view_shopkeeper_view,name='patient-view-shopkeeper'),
     path('searchdoctor', views.search_doctor_view,name='searchdoctor'),
+    path('searchshopkeeper', views.search_shopkeeper_view,name='searchshopkeeper'),
     path('patient-discharge', views.patient_discharge_view,name='patient-discharge'),
 
 ]

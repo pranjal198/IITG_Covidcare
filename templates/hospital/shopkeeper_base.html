@@ -277,15 +277,15 @@
   <nav class="menu" tabindex="0">
     <div class="smartphone-menu-trigger"></div>
     <header class="avatar">
-      <img src="{% static doctor.profile_pic.url %}" alt="Profile Pic" />
+      <img src="{% static shopkeeper.profile_pic.url %}" alt="Profile Pic" />
       <br><br>
-      <h6>Doctor</h6>
+      <h6>Shopkeeper</h6>
       <h2>{{request.user.first_name}}</h2>
     </header>
     <ul>
       <li tabindex="0" class="icon-dashboard"> <a style="color:white; text-decoration:none;" href="/shopkeeper-dashboard"><span>Dashboard</span></a> </li>
       <!-- <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/doctor-patient"><span>Patient</span></a></li> -->
-      <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/shopkeeper-appointment"><span>Appointments</span></a></li>
+      <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/shopkeeper-order"><span>Orders</span></a></li>
     </ul>
   </nav>
   <main>
