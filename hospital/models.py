@@ -25,7 +25,7 @@ class Doctor(models.Model):
         upload_to="profile_pic/DoctorProfilePic/", null=True, blank=True
     )
     address = models.CharField(max_length=40)
-    mobile = models.CharField(max_length=20, null=False)
+    mobile = models.CharField(max_length=20, null=True)
     department = models.CharField(
         max_length=50, choices=departments, default="Cardiologist"
     )
@@ -49,7 +49,7 @@ class Shopkeeper(models.Model):
         upload_to="profile_pic/ShopkeeperProfilePic/", null=True, blank=True
     )
     address = models.CharField(max_length=40)
-    mobile = models.CharField(max_length=20, null=False)
+    mobile = models.CharField(max_length=20, null=True)
     type = models.CharField(max_length=50, choices=type, default="Other")
     status = models.BooleanField(default=False)
 
