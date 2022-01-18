@@ -95,6 +95,7 @@ def shopkeeper_signup_view(request):
             shopkeeper=shopkeeper.save()
             my_shopkeeper_group = Group.objects.get_or_create(name='SHOPKEEPER')
             my_shopkeeper_group[0].user_set.add(user)
+            print('added to group SHOPKEEPER')
         return HttpResponseRedirect('shopkeeperlogin')
     return render(request,'hospital/shopkeepersignup.html',context=mydict)
 
@@ -856,6 +857,7 @@ def doctor_view_appointment_view(request):
     appointments=zip(appointments,patients)
     return render(request,'hospital/doctor_view_appointment.html',{'appointments':appointments,'doctor':doctor})
 
+# TODO: fix this to show multiple orders from one patient
 @login_required(login_url='shopkeeperlogin')
 @user_passes_test(is_shopkeeper)
 def shopkeeper_view_order_view(request):
@@ -864,7 +866,11 @@ def shopkeeper_view_order_view(request):
     patientid=[]
     for o in orders:
         patientid.append(o.patientId)
-    patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
+
+    patients = []
+    for p in patientid:
+        patients.append(models.Patient.objects.filter(user = p))
+    #patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
     orders=zip(orders,patients)
     return render(request,'hospital/shopkeeper_view_order.html',{'orders':orders,'shopkeeper':shopkeeper})
 
@@ -1017,7 +1023,7 @@ def patient_book_order_view(request):
             order.patientId=request.user.id #----user can choose any patient but only their info will be stored
             order.shopkeeperName=models.User.objects.get(id=request.POST.get('shopkeeperId')).first_name
             order.patientName=request.user.first_name #----user can choose any patient but only their info will be stored
-            order.status=False
+            order.status=True
             order.save()
             print('ORDER SAVED')
         return HttpResponseRedirect('patient-view-order')

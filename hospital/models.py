@@ -84,7 +84,7 @@ class Order(models.Model):
     shopkeeperName=models.CharField(max_length=40,null=True)
     orderDate=models.DateField(auto_now=True)
     description=models.TextField(max_length=500)
-    status=models.BooleanField(default=False)
+    status=models.BooleanField(default=True)
 
 
 

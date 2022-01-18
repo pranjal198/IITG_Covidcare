@@ -95,7 +95,7 @@ urlpatterns +=[
 ]
 
 
-# TODO:Add patient-order interactions; fix the Group issue which happens 'afterlogin'; improve UI
+# TODO:fix the Group issue which happens 'afterlogin'; allow shopkeeper to approve order instead of admin; improve UI
 
 
 #---------FOR PATIENT RELATED URLS-------------------------------------
