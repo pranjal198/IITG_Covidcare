@@ -188,7 +188,7 @@ urlpatterns += [
 ]
 
 
-# TODO:fix the Group issue which happens 'afterlogin'; allow shopkeeper to approve order instead of admin; improve UI
+# TODO: improve UI; add option to Patient to request testing
 
 
 # ---------FOR PATIENT RELATED URLS-------------------------------------
