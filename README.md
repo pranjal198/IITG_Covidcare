@@ -1,5 +1,7 @@
 
-# IITG CovidCare
+# IITG CovidCare 
+### Developed for the Research & Industrial Conclave 2022 Hackathon
+### Theme: To manage COVID-19 outbreak in an academic campus
 ### Created by [Gunjan Dhanuka](https://github.com/GunjanDhanuka) and [Pranjal Singh](https://github.com/pranjal198)
 ---
 
@@ -16,6 +18,18 @@
 ![pie chart](static/screenshots/graph.png)
 ---
 ## Functions
+
+### Overall Features
+- An all-in-one solution for CRT admins, doctors and nurses, students and campus junta and the shopkeepers.
+- Anyone can see the total number of positive cases on the campus and their names on the home page.
+- The CRT Admin can add doctors, shopkeepers, patients or approve them if they register themselves.
+- The Campus Junta can easily get essential delivered through them by the Order System. (Payment Portal is not present as of now)
+- The Doctors can view all of their appointments and patient-data in one place.
+- The Student can view his Appointments as well as his Orders. Also they can update their status if they get Covid Positive or Recover from it.
+- The CRT Team can also find out who is unvaccinated and encourage them to get it at the earliest.
+- Anyone on the campus can create a Resident/Student account.
+
+  
 ### Admin
 - Signup their account. Then Login (No approval Required).
 - Can register/view/approve/reject/delete doctor who are available for the Campus Junta.
@@ -75,4 +89,9 @@ EMAIL_RECEIVING_USER = 'youremail@gmail.com'
 ```
 https://myaccount.google.com/lesssecureapps
 ```
+
+## Important
+- Anyone can register as the Admin now, which is obviously not desired for real-life deployment. So make sure to block that route after adding all the CRT Admins.
+
+Incase of any queries, feel free to reach out at d.gunjan@iitg.ac.in or pranjal.singh@iitg.ac.in
 
