@@ -57,7 +57,7 @@ class PatientForm(forms.ModelForm):
 
     class Meta:
         model = models.Patient
-        fields = ["address", "mobile", "status", "symptoms", "profile_pic"]
+        fields = ["address", "mobile", "status", "symptoms", "covidStatus","profile_pic"]
 
 
 class AppointmentForm(forms.ModelForm):

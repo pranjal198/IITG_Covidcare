@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "hospital",
     "widget_tweaks",
+    "crispy_forms"
 ]
 
 MIDDLEWARE = [
@@ -133,7 +134,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static")
 
 
 LOGIN_REDIRECT_URL = "/afterlogin"
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # for contact us give your gmail id and password
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"

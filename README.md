@@ -1,5 +1,5 @@
 
-# Hospital Management
+# IITG CovidCare
 ---
 ## screenshots
 ### Homepage

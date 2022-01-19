@@ -1,9 +1,5 @@
 {% extends 'hospital/homebase.html' %}
 {% load static %}
-<!--
-written By : sumit kumar
-facebook : fb.com/sumit.luv
--->
 
 
 {% block content %}
@@ -14,13 +10,14 @@ facebook : fb.com/sumit.luv
     .jumbotron {
       margin-top: 0px;
       margin-bottom: 0px;
-      background-image: url('{% static "images/bg.jpg" %}');
+      background-image: url('{% static "images/iitg.jpg" %}');
       background-size: cover;
       background-repeat: no-repeat;
     }
 
     .jumbotron h5,
     h3 {
+      color: white;
       text-align: center;
     }
 
@@ -56,13 +53,13 @@ facebook : fb.com/sumit.luv
 
 <div class="jumbotron" style="margin-bottom: 0px;margin-top: 0px;">
   <br>
-  <h5 class="display-3 glow">You’ll Love the Way We Care for You</h5>
+  <h5 class="display-3 glow">Book Appointments and Shop for Necessary Items! <br>All in one place!</h5>
   <br><br><br><br><br>
   <p>
-  <h3>Emergency ?</h3>
+  <h3>Student or Resident of Campus?</h3>
 
   <p class="lead">
-    <a class="btn btn-primary btn-lg" href="/patientclick" role="button">Take Appointment</a>
+    <a class="btn btn-primary btn-lg" href="/patientclick" role="button">Take Appointment or Order Items!</a>
   </p>
   <br><br>
 </div>

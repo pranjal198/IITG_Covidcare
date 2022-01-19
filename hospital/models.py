@@ -9,6 +9,8 @@ departments = [
     ("Allergists/Immunologists", "Allergists/Immunologists"),
     ("Anesthesiologists", "Anesthesiologists"),
     ("Colon and Rectal Surgeons", "Colon and Rectal Surgeons"),
+    ("General Physician", "General Physician"),
+    ("Other", "Other"),
 ]
 
 type = [
@@ -16,6 +18,14 @@ type = [
     ("General", "General"),
     ("Medicine", "Medicine"),
     ("Other", "Other"),
+]
+
+covidStatusTypes = [
+    ("Fully-Vaccinated", "Fully-Vaccinated"),
+    ("Requested Testing", "Requested Testing"),
+    ("Covid Positive", "Covid Positive"),
+    ("Quarantined", "Quarantined"),
+    ("Unvaccinated", "Unvaccinated")
 ]
 
 
@@ -40,7 +50,9 @@ class Doctor(models.Model):
         return self.user.id
 
     def __str__(self):
-        return "{} {} ({})".format(self.user.first_name, self.user.last_name, self.department)
+        return "{} {} ({})".format(
+            self.user.first_name, self.user.last_name, self.department
+        )
 
 
 class Shopkeeper(models.Model):
@@ -73,9 +85,12 @@ class Patient(models.Model):
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=False)
     symptoms = models.CharField(max_length=100, blank=True)
-    assignedDoctorId = models.PositiveIntegerField(null=True, blank=True)
+    assignedDoctorId = models.PositiveIntegerField(null=False, default=-1)
     admitDate = models.DateField(auto_now=True)
     status = models.BooleanField(default=True)
+    covidStatus = models.CharField(
+        max_length=50, choices=covidStatusTypes, default="Fully Vaccinated"
+    )
 
     @property
     def get_name(self):
@@ -86,7 +101,7 @@ class Patient(models.Model):
         return self.user.id
 
     def __str__(self):
-        return self.user.first_name + " (" + self.symptoms + ")"
+        return self.user.first_name + " (" + self.covidStatus + ")"
 
 
 class Appointment(models.Model):
