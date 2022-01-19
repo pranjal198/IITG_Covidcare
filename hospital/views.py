@@ -1,13 +1,17 @@
+from re import template
 from django.shortcuts import render, redirect, reverse
-from . import forms, models
+from . import (forms, models)
 from django.db.models import Sum
 from django.contrib.auth.models import Group
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required, user_passes_test
 from datetime import datetime, timedelta, date
 from django.conf import settings
 from django.db.models import Q
+from django.core import serializers
+from django.template import RequestContext
+import django_tables2 as tables
 
 # Create your views here.
 def home_view(request):
@@ -477,7 +481,7 @@ def delete_patient_from_hospital_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
-@user_passes_test(is_admin_or_patient)
+@user_passes_test(is_admin)
 def update_patient_view(request, pk):
     patient = models.Patient.objects.get(id=pk)
     user = models.User.objects.get(id=patient.user_id)
@@ -498,6 +502,28 @@ def update_patient_view(request, pk):
             patient.save()
             return redirect("admin-view-patient")
     return render(request, "hospital/admin_update_patient.html", context=mydict)
+
+@login_required(login_url="patientlogin")
+@user_passes_test(is_patient)
+def patient_update_patient_view(request):
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    user = models.User.objects.get(id=patient.user_id)
+    if request.method == "POST":
+        userForm = forms.PatientUserForm(request.POST, instance=request.user)
+        #patientForm = forms.PatientForm(request.FILES, instance=patient)
+        #userForm = forms.PatientUserForm(request.POST, instance=user)
+        patientForm = forms.PatientUpdateForm(request.POST, request.FILES, instance=patient)
+        if patientForm.is_valid():
+            patient.save()
+            return redirect("patient-dashboard")
+    else:
+        userForm = forms.PatientUserForm(instance=user)
+        patientForm = forms.PatientUpdateForm(instance=patient)
+    mydict = {
+        'userForm': userForm,
+        'patientForm': patientForm
+    }
+    return render(request, "hospital/patient_update_patient.html", context=mydict)
 
 
 @login_required(login_url="adminlogin")
@@ -1392,3 +1418,63 @@ def contactus_view(request):
 # ---------------------------------------------------------------------------------
 # ------------------------ ADMIN RELATED VIEWS END ------------------------------
 # ---------------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------------
+# ------------------------ COVID DASHBOARD RELATED VIEWS ------------------------------
+# ---------------------------------------------------------------------------------
+
+def dashboard_with_pivot(request):
+    return render(request, 'hospital/dashboard_with_pivot.html', {})
+
+def pivot_data(request):
+    labels = ["Fully-Vaccinated", "Requested Testing", "Quarantined", "Covid Positive", "Other"]
+    data = [0, 0, 0, 0, 0]
+
+    queryset = models.Patient.objects.all()
+
+    for patient in queryset:
+        covStatus = patient.covidStatus
+        index = 4
+        try:
+            index = labels.index(str(covStatus))
+        except ValueError:
+            index = 4
+        data[index] += 1
+
+    return JsonResponse(
+        data={
+            'labels': labels,
+            'data': data
+        }
+    )
+
+def pivot_data_per_student(request):
+
+    labels = []
+    data = []
+    queryset = models.Patient.objects.all()
+
+    for patient in queryset:
+        labels.append(patient.get_name())
+        data.append(patient.covidStatus)
+
+    return JsonResponse(
+        data={
+            'labels': labels,
+            'data': data
+        }
+    )
+
+# def table_view(request):
+#     queryset = models.Patient.objects.all()
+#     table = models.PatientTable(queryset)
+
+#     return render_to_response("table_page.html", {"table": table}, context_instance=RequestContext(request))
+# class TableView(tables.SingleTableView):
+#     table_class = models.PatientTable
+#     queryset = models.Patient.objects.all()
+#     template_name = "table_page.html"
+
+
+

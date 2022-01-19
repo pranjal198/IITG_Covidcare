@@ -59,6 +59,10 @@ class PatientForm(forms.ModelForm):
         model = models.Patient
         fields = ["address", "mobile", "status", "symptoms", "covidStatus","profile_pic"]
 
+class PatientUpdateForm(forms.ModelForm):
+    class Meta:
+        model = models.Patient
+        fields = ['mobile', 'address', 'covidStatus', 'profile_pic']
 
 class AppointmentForm(forms.ModelForm):
     doctorId = forms.ModelChoiceField(

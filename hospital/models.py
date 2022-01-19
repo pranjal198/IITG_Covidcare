@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import django_tables2 as tables
 
 
 departments = [
@@ -58,7 +59,7 @@ class Doctor(models.Model):
 class Shopkeeper(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(
-        upload_to="profile_pic/ShopkeeperProfilePic/", default='default.jpg'
+        upload_to="profile_pic/ShopkeeperProfilePic/", default='images/default.png'
     )
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=True)
@@ -80,7 +81,7 @@ class Shopkeeper(models.Model):
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(
-        upload_to="profile_pic/PatientProfilePic/", default='default.png'
+        upload_to="profile_pic/PatientProfilePic/", default='images/default.png'
     )
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=False)
@@ -141,3 +142,7 @@ class PatientDischargeDetails(models.Model):
     doctorFee = models.PositiveIntegerField(null=False)
     OtherCharge = models.PositiveIntegerField(null=False)
     total = models.PositiveIntegerField(null=False)
+
+# class PatientTable(tables.Table):
+#     class Meta:
+#         model = Patient

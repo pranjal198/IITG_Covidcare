@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "hospital",
     "widget_tweaks",
-    "crispy_forms"
+    "crispy_forms",
+    "django_tables2"
 ]
 
 MIDDLEWARE = [

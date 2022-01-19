@@ -226,6 +226,7 @@ urlpatterns += [
         views.patient_view_shopkeeper_view,
         name="patient-view-shopkeeper",
     ),
+    path("patient-update-patient", views.patient_update_patient_view, name="patient-update-patient"),
     path("searchdoctor", views.search_doctor_view, name="searchdoctor"),
     path("searchshopkeeper", views.search_shopkeeper_view, name="searchshopkeeper"),
     path("patient-discharge", views.patient_discharge_view, name="patient-discharge"),
@@ -262,4 +263,11 @@ urlpatterns += [
         name="shopkeeper-delete-order",
     ),
     path("delete-order/<int:pk>", views.delete_order_view, name="delete-order"),
+]
+
+
+urlpatterns += [
+    path('covid-dashboard', views.dashboard_with_pivot, name='covid-dashboard'),
+    path('pivot-data', views.pivot_data, name='pivot-data'),
+    path('pivot-data-per-student', views.pivot_data_per_student, name='pivot-data-per-student'),
 ]
