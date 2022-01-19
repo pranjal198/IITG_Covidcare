@@ -1476,5 +1476,7 @@ def pivot_data_per_student(request):
 #     queryset = models.Patient.objects.all()
 #     template_name = "table_page.html"
 
-
+def table_view(request):
+    patients = models.Patient.objects.filter(covidStatus="Covid Positive")
+    return render(request, 'hospital/table_page.html', {"patients": patients})
 

@@ -1,0 +1,25 @@
+{% extends 'hospital/homebase.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<h2>List of Covid Positive Patients in Campus</h2>
+<table class="table table-striped table-hover">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Covid Status</th>
+        <th scope="col">Mobile Number</th>
+    </tr>
+    {% for p in patients %}
+    <tr>
+        <th scope="row">{{ p.get_name }}</td>
+        <td>{{ p.covidStatus }}</td>
+        <td>{{ p.mobile }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p class="text">Incase of any changes in status of patient, please make changes from the Update Profile for respective
+    patient.</p>
+{% endblock content %}

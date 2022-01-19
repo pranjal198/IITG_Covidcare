@@ -270,4 +270,5 @@ urlpatterns += [
     path('covid-dashboard', views.dashboard_with_pivot, name='covid-dashboard'),
     path('pivot-data', views.pivot_data, name='pivot-data'),
     path('pivot-data-per-student', views.pivot_data_per_student, name='pivot-data-per-student'),
+    path('table-page', views.table_view, name='table-page')
 ]
