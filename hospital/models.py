@@ -32,7 +32,7 @@ covidStatusTypes = [
 class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(
-        upload_to="profile_pic/DoctorProfilePic/", null=True, blank=True
+        upload_to="profile_pic/DoctorProfilePic/", default='default.png'
     )
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=True)
@@ -58,7 +58,7 @@ class Doctor(models.Model):
 class Shopkeeper(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(
-        upload_to="profile_pic/ShopkeeperProfilePic/", null=True, blank=True
+        upload_to="profile_pic/ShopkeeperProfilePic/", default='default.jpg'
     )
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=True)
@@ -80,12 +80,12 @@ class Shopkeeper(models.Model):
 class Patient(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(
-        upload_to="profile_pic/PatientProfilePic/", null=True, blank=True
+        upload_to="profile_pic/PatientProfilePic/", default='default.png'
     )
     address = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20, null=False)
     symptoms = models.CharField(max_length=100, blank=True)
-    assignedDoctorId = models.PositiveIntegerField(null=False, default=-1)
+    assignedDoctorId = models.PositiveIntegerField(null=True)
     admitDate = models.DateField(auto_now=True)
     status = models.BooleanField(default=True)
     covidStatus = models.CharField(

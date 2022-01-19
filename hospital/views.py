@@ -116,8 +116,9 @@ def patient_signup_view(request):
             user.save()
             patient = patientForm.save(commit=False)
             patient.user = user
+            patient.status = True
             patient.assignedDoctorId = request.POST.get("assignedDoctorId")
-            patient = patient.save()
+            patient.save()
             my_patient_group, created = Group.objects.get_or_create(name="PATIENT")
             my_patient_group.user_set.add(user)
             return HttpResponseRedirect("patientlogin")
@@ -139,6 +140,12 @@ def is_shopkeeper(user):
 
 def is_patient(user):
     return user.groups.filter(name="PATIENT").exists()
+
+def is_admin_or_patient(user):
+    return is_admin(user) or is_patient(user)
+
+def is_admin_or_shopkeeper(user):
+    return is_admin(user) or is_shopkeeper(user)
 
 
 # ---------AFTER ENTERING CREDENTIALS WE CHECK WHETHER USERNAME AND PASSWORD IS OF ADMIN,DOCTOR OR PATIENT
@@ -170,7 +177,9 @@ def afterlogin_view(request):
             return redirect("patient-dashboard")
         else:
             return render(request, "hospital/patient_wait_for_approval.html")
-
+    else:
+        print("Error in sign in")
+        return redirect("logout")
 
 # ---------------------------------------------------------------------------------
 # ------------------------ ADMIN RELATED VIEWS START ------------------------------
@@ -468,7 +477,7 @@ def delete_patient_from_hospital_view(request, pk):
 
 
 @login_required(login_url="adminlogin")
-@user_passes_test(is_admin)
+@user_passes_test(is_admin_or_patient)
 def update_patient_view(request, pk):
     patient = models.Patient.objects.get(id=pk)
     user = models.User.objects.get(id=patient.user_id)
