@@ -55,6 +55,16 @@
   {% include "hospital/navbar.html" %}
   <br>
   <br>
+  <div class="col-md-8">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
   <br><br>
 
   <!--- login page for doctor by admin  ---------->

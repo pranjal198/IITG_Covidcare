@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Gunjan || Pranjal</title>
+  <title>IITG CovidCare</title>
   <style type="text/css">
     body {
       color: #aa082e;
@@ -57,7 +57,17 @@
   <br>
   <br>
   <br>
-
+  <center>
+    <div class="col-md-8">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}   
+    </div>
+  </center>
 
 
 

@@ -313,6 +313,19 @@
     </div>
     <!-- nav end -->
     <br><br>
+    <center>
+      <div class="col-md-8">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}   
+      </div>
+    </center>
+    
+    <br><br>
     <!-- content start-->
     {% block content %}
     {% endblock content %}

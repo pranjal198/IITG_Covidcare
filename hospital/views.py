@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.core import serializers
 from django.template import RequestContext
 import django_tables2 as tables
+from django.contrib import messages
 
 # Create your views here.
 def home_view(request):
@@ -57,6 +58,7 @@ def admin_signup_view(request):
             user.save()
             my_admin_group, created = Group.objects.get_or_create(name="ADMIN")
             my_admin_group.user_set.add(user)
+            messages.success(request, "Your account has been created! You are now able to login.")
             return HttpResponseRedirect("adminlogin")
     return render(request, "hospital/adminsignup.html", {"form": form})
 
@@ -77,6 +79,7 @@ def doctor_signup_view(request):
             doctor = doctor.save()
             my_doctor_group, created = Group.objects.get_or_create(name="DOCTOR")
             my_doctor_group.user_set.add(user)
+            messages.success(request, "Your account has been created! You are now able to login.")
             return HttpResponseRedirect("doctorlogin")
     return render(request, "hospital/doctorsignup.html", context=mydict)
 
@@ -100,7 +103,8 @@ def shopkeeper_signup_view(request):
                 name="SHOPKEEPER"
             )
             my_shopkeeper_group.user_set.add(user)
-            print("added to group SHOPKEEPER")
+            # print("added to group SHOPKEEPER")
+            messages.success(request, "Your account has been created! You are now able to login.")
             return HttpResponseRedirect("shopkeeperlogin")
         else:
             print("some error")
@@ -125,6 +129,7 @@ def patient_signup_view(request):
             patient.save()
             my_patient_group, created = Group.objects.get_or_create(name="PATIENT")
             my_patient_group.user_set.add(user)
+            messages.success(request, "Your account has been created! You are now able to login.")
             return HttpResponseRedirect("patientlogin")
     return render(request, "hospital/patientsignup.html", context=mydict)
 
@@ -268,6 +273,7 @@ def delete_doctor_from_hospital_view(request, pk):
     user = models.User.objects.get(id=doctor.user_id)
     user.delete()
     doctor.delete()
+    messages.success(request, "Doctor has now been deleted")
     return redirect("admin-view-doctor")
 
 
@@ -278,6 +284,7 @@ def delete_shopkeeper_from_hospital_view(request, pk):
     user = models.User.objects.get(id=shopkeeper.user_id)
     user.delete()
     shopkeeper.delete()
+    messages.success(request, "Shopkeeper has now been deleted")
     return redirect("admin-view-shopkeeper")
 
 
@@ -300,6 +307,7 @@ def update_doctor_view(request, pk):
             doctor = doctorForm.save(commit=False)
             doctor.status = True
             doctor.save()
+            messages.success(request, "Doctor detail has now been updated")
             return redirect("admin-view-doctor")
     return render(request, "hospital/admin_update_doctor.html", context=mydict)
 
@@ -325,6 +333,7 @@ def update_shopkeeper_view(request, pk):
             shopkeeper = shopkeeperForm.save(commit=False)
             shopkeeper.status = True
             shopkeeper.save()
+            messages.success(request, "Shopkeeper details have now been updated.")
             return redirect("admin-view-shopkeeper")
     return render(request, "hospital/admin_update_shopkeeper.html", context=mydict)
 
@@ -350,7 +359,7 @@ def admin_add_doctor_view(request):
 
             my_doctor_group = Group.objects.get_or_create(name="DOCTOR")
             my_doctor_group[0].user_set.add(user)
-
+            messages.success(request, "Doctor has been successfully added!")
         return HttpResponseRedirect("admin-view-doctor")
     return render(request, "hospital/admin_add_doctor.html", context=mydict)
 
@@ -376,7 +385,7 @@ def admin_add_shopkeeper_view(request):
 
             my_shopkeeper_group = Group.objects.get_or_create(name="SHOPKEEPER")
             my_shopkeeper_group[0].user_set.add(user)
-
+            messages.success(request, "Shopkeeper has been successfully added.")
         return HttpResponseRedirect("admin-view-shopkeeper")
     return render(request, "hospital/admin_add_shopkeeper.html", context=mydict)
 
@@ -405,6 +414,7 @@ def approve_doctor_view(request, pk):
     doctor = models.Doctor.objects.get(id=pk)
     doctor.status = True
     doctor.save()
+    messages.success(request, "Doctor has now been approved.")
     return redirect(reverse("admin-approve-doctor"))
 
 
@@ -414,6 +424,7 @@ def approve_shopkeeper_view(request, pk):
     shopkeeper = models.Shopkeeper.objects.get(id=pk)
     shopkeeper.status = True
     shopkeeper.save()
+    messages.success(request, "Shopkeeper has now been deleted")
     return redirect(reverse("admin-approve-shopkeeper"))
 
 
@@ -424,6 +435,7 @@ def reject_doctor_view(request, pk):
     user = models.User.objects.get(id=doctor.user_id)
     user.delete()
     doctor.delete()
+    messages.warning(request, "Doctor has now been rejected")
     return redirect("admin-approve-doctor")
 
 
@@ -434,6 +446,7 @@ def reject_shopkeeper_view(request, pk):
     user = models.User.objects.get(id=shopkeeper.user_id)
     user.delete()
     shopkeeper.delete()
+    messages.warning(request, "Shopkeeper has now been rejected.")
     return redirect("admin-approve-shopkeeper")
 
 
@@ -500,6 +513,7 @@ def update_patient_view(request, pk):
             patient.status = True
             patient.assignedDoctorId = request.POST.get("assignedDoctorId")
             patient.save()
+            messages.success(request, "Patient details successfully updated!")
             return redirect("admin-view-patient")
     return render(request, "hospital/admin_update_patient.html", context=mydict)
 
@@ -515,6 +529,7 @@ def patient_update_patient_view(request):
         patientForm = forms.PatientUpdateForm(request.POST, request.FILES, instance=patient)
         if patientForm.is_valid():
             patient.save()
+            messages.success(request, "Successfully updated your details.")
             return redirect("patient-dashboard")
     else:
         userForm = forms.PatientUserForm(instance=user)
@@ -548,7 +563,7 @@ def admin_add_patient_view(request):
 
             my_patient_group = Group.objects.get_or_create(name="PATIENT")
             my_patient_group[0].user_set.add(user)
-
+            messages.success(request, "Patient has been successfully added")
         return HttpResponseRedirect("admin-view-patient")
     return render(request, "hospital/admin_add_patient.html", context=mydict)
 
@@ -728,6 +743,7 @@ def admin_add_appointment_view(request):
             ).first_name
             appointment.status = True
             appointment.save()
+            messages.success(request, "Appointment has been successfully created")
         return HttpResponseRedirect("admin-view-appointment")
     return render(request, "hospital/admin_add_appointment.html", context=mydict)
 
@@ -750,6 +766,7 @@ def approve_appointment_view(request, pk):
     appointment = models.Appointment.objects.get(id=pk)
     appointment.status = True
     appointment.save()
+    messages.success(request, "Appointment has been successfully approved")
     return redirect(reverse("admin-approve-appointment"))
 
 
@@ -758,6 +775,7 @@ def approve_appointment_view(request, pk):
 def reject_appointment_view(request, pk):
     appointment = models.Appointment.objects.get(id=pk)
     appointment.delete()
+    messages.success(request, "Appointment has been rejected")
     return redirect("admin-approve-appointment")
 
 
@@ -1211,6 +1229,7 @@ def patient_book_appointment_view(request):
             )  # ----user can choose any patient but only their info will be stored
             appointment.status = False
             appointment.save()
+            messages.success(request, "Appointment has been successfully created. Please wait for approval.")
         return HttpResponseRedirect("patient-view-appointment")
     return render(request, "hospital/patient_book_appointment.html", context=mydict)
 
@@ -1249,6 +1268,7 @@ def patient_book_order_view(request):
             order.status = True
             order.save()
             print("ORDER SAVED")
+            messages.success(request, f"Order has been successfully created. Please contact the shopkeeper at {shopkeeper.mobile}.")
         return HttpResponseRedirect("patient-view-order")
     print("SOME ISSUE")
     return render(request, "hospital/patient_book_order.html", context=mydict)

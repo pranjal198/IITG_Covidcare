@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Gunjan || Pranjal</title>
+  <title>IITG CovidCare</title>
 
 
   <style type="text/css">
@@ -56,7 +56,17 @@
   <br>
   <br>
   <br><br>
-
+  <center>
+    <div class="col-md-8">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}   
+    </div>
+  </center>
   <!--- login page for patient by admin  ---------->
   <form method="post">
     {% csrf_token %}
